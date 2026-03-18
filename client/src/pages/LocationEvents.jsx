@@ -1,61 +1,137 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import LocationsAPI from "../services/locationsAPI";
-import EventsAPI from "../services/eventsAPI";
-import "../css/LocationEvents.css";
+import { useParams, Link } from "react-router-dom";
+import { getEventsByLocationSlug } from "../services/eventsAPI";
 
 const LocationEvents = () => {
-  const { id } = useParams(); // Get location ID from URL
-  const [location, setLocation] = useState(null);
+  const { slug } = useParams();
   const [events, setEvents] = useState([]);
+  const [locationName, setLocationName] = useState("");
 
   useEffect(() => {
-    async function loadLocationData() {
-      try {
-        const locationData = await LocationsAPI.getLocationById(id);
-        const eventsData = await EventsAPI.getEventsByLocationId(id);
-
-        setLocation(locationData);
-        setEvents(eventsData);
-      } catch (error) {
-        console.error("Error loading location data:", error);
+    getEventsByLocationSlug(slug).then((eventsData) => {
+      if (eventsData.length > 0) {
+        setLocationName(eventsData[0].location_name);
       }
-    }
-    loadLocationData();
-  }, [id]);
+      setEvents(
+        eventsData.map((event) => ({
+          ...event,
+          timeRemaining: calculateTimeRemaining(event.event_date),
+        }))
+      );
+    });
+  }, [slug]);
 
-  if (!location) return <div className="loading">Loading events...</div>;
+  const calculateTimeRemaining = (eventDate) => {
+    const now = Date.now();
+    const eventTime = new Date(eventDate).getTime();
+    const diff = eventTime - now;
+
+    if (diff <= 0) return "Event has passed";
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
 
   return (
-    <div className="location-events">
-      <header>
-        <div className="location-image">
-          <div className="placeholder-image">🕹️ {location.name}</div>
-        </div>
+    <div
+      style={{
+        borderTop: "10px solid #1098ad",
+        backgroundColor: "#f7f7f7",
+        minHeight: "100vh",
+        padding: "60px 0",
+      }}
+    >
+      <div
+        style={{
+          width: "800px",
+          margin: "0 auto",
+          padding: "20px 40px",
+        }}
+      >
+        <Link
+          to="/locations"
+          style={{
+            display: "inline-block",
+            backgroundColor: "white",
+            color: "#1098ad",
+            padding: "15px 30px",
+            textDecoration: "none",
+            fontWeight: "bold",
+            border: "3px solid #1098ad",
+            marginBottom: "40px",
+          }}
+        >
+          ← Back to All Arcades
+        </Link>
 
-        <div className="location-info">
-          <h2>{location.name}</h2>
-          <p>{location.city}</p>
-        </div>
-      </header>
+        <h1
+          style={{
+            color: "#1098ad",
+            fontSize: "40px",
+            fontStyle: "italic",
+            marginBottom: "40px",
+            textAlign: "center",
+          }}
+        >
+          {locationName}
+        </h1>
 
-      <main>
-        {events && events.length > 0 ? (
-          events.map((event) => (
-            <div key={event.id} className="event-card">
-              <h3>{event.title}</h3>
-              <p>{event.description}</p>
-              <p>
-                <strong>{new Date(event.date_time).toLocaleString()}</strong>
-              </p>
+        <div>
+          {events.length === 0 ? (
+            <div
+              style={{
+                backgroundColor: "white",
+                padding: "40px",
+                border: "5px solid #1098ad",
+                textAlign: "center",
+              }}
+            >
+              <h3>No events yet!</h3>
+              <p>Check back soon 🎮</p>
             </div>
-          ))
-        ) : (
-          <h2>
-            <i className="fa-regular fa-calendar-xmark fa-shake"></i> No events scheduled at {location.name} yet!
-          </h2>
-        )}
-      </main>
+          ) : (
+            events.map((event) => (
+              <div
+                key={event.id}
+                style={{
+                  backgroundColor: "white",
+                  padding: "40px",
+                  marginBottom: "30px",
+                  border: "5px solid #1098ad",
+                  borderRadius: "10px",
+                }}
+              >
+                <h3
+                  style={{
+                    color: "#1098ad",
+                    fontSize: "30px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  {event.title}
+                </h3>
+                <p style={{ fontSize: "20px", marginBottom: "20px" }}>{new Date(event.event_date).toLocaleString()}</p>
+                <div
+                  style={{
+                    backgroundColor: event.timeRemaining === "Event has passed" ? "#ccc" : "#1098ad",
+                    color: "white",
+                    padding: "20px",
+                    fontSize: "24px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    borderRadius: "5px",
+                  }}
+                >
+                  {event.timeRemaining}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };

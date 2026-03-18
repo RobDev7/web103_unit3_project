@@ -1,10 +1,7 @@
 import express from "express";
-import { getAllLocations, getLocationById } from "../controllers/locationsController.js";
+import { getAllLocations, getLocationBySlug } from "../controllers/locationsController.js";
 
 const router = express.Router();
-
-// Routes to get all locations and a single location by ID
-router.get("/locations", getAllLocations);
-router.get("/locations/:id", getLocationById);
-
+router.get("/", getAllLocations);
+router.get("/:slug", getLocationBySlug);
 export default router;

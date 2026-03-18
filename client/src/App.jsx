@@ -1,28 +1,15 @@
-import React from "react";
-import { useRoutes, Link } from "react-router-dom";
-import Locations from "./pages/Locations";
-import LocationEvents from "./pages/LocationEvents";
-import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import Locations from "./pages/Locations.jsx";
+import LocationEvents from "./pages/LocationEvents.jsx";
 
-const App = () => {
-  let element = useRoutes([
-    { path: "/", element: <Locations /> },
-    { path: "/locations/:id", element: <LocationEvents /> },
-  ]);
-
+function App() {
   return (
-    <div className="app">
-      <header className="main-header">
-        <h1>🕹️ UnityGrid Plaza - Arcade Bars USA</h1>
-        <div className="header-buttons">
-          <Link to="/" role="button">
-            🗺️ Home
-          </Link>
-        </div>
-      </header>
-      <main>{element}</main>
-    </div>
+    <Routes>
+      <Route path="/" element={<Locations />} />
+      <Route path="/locations" element={<Locations />} />
+      <Route path="/locations/:slug" element={<LocationEvents />} />
+    </Routes>
   );
-};
+}
 
 export default App;

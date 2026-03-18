@@ -4,7 +4,7 @@ Submitted by: **Robert Berryman II**
 
 About this web app: **Explore arcade bars across the USA**
 
-Time spent: **5** hours
+Time spent: **9** hours
 
 ## Required Features
 
@@ -13,21 +13,21 @@ The following **required** functionality is completed:
 <!-- Make sure to check off completed functionality below -->
 
 - [x] **The web app uses React to display data from the API**
-- [ ] **The web app is connected to a PostgreSQL database, with an appropriately structured Events table**
-  - [ ] **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
-  - [ ] **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT \* FROM tablename;' to display your table contents.**
+- [x] **The web app is connected to a PostgreSQL database, with an appropriately structured Events table**
+  - [x] **NOTE: Your walkthrough added to the README must include a view of your Render dashboard demonstrating that your Postgres database is available**
+  - [x] **NOTE: Your walkthrough added to the README must include a demonstration of your table contents. Use the psql command 'SELECT \* FROM tablename;' to display your table contents.**
 - [x] **The web app displays a title.**
-- [ ] **Website includes a visual interface that allows users to select a location they would like to view.**
-  - [ ] _Note: A non-visual list of links to different locations is insufficient._
-- [ ] **Each location has a detail page with its own unique URL.**
-- [ ] **Clicking on a location navigates to its corresponding detail page and displays list of all events from the `events` table associated with that location.**
+- [x] **Website includes a visual interface that allows users to select a location they would like to view.**
+  - [x] _Note: A non-visual list of links to different locations is insufficient._
+- [x] **Each location has a detail page with its own unique URL.**
+- [x] **Clicking on a location navigates to its corresponding detail page and displays list of all events from the `events` table associated with that location.**
 
 The following **optional** features are implemented:
 
 - [ ] An additional page shows all possible events
   - [ ] Users can sort _or_ filter events by location.
-- [ ] Events display a countdown showing the time remaining before that event
-  - [ ] Events appear with different formatting when the event has passed (ex. negative time, indication the event has passed, crossed out, etc.).
+- [x] Events display a countdown showing the time remaining before that event
+  - [x] Events appear with different formatting when the event has passed (ex. negative time, indication the event has passed, crossed out, etc.).
 
 The following **additional** features are implemented:
 

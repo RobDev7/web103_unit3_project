@@ -1,46 +1,51 @@
 import { pool } from "./database.js";
 
-// Delete old data first
-await pool.query("DROP TABLE IF EXISTS events CASCADE");
-await pool.query("DROP TABLE IF EXISTS locations CASCADE");
+const resetDB = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS locations (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) UNIQUE NOT NULL,
+        slug VARCHAR(255) UNIQUE NOT NULL
+      );
+      
+      CREATE TABLE IF NOT EXISTS events (
+        id SERIAL PRIMARY KEY,
+        location_id INTEGER REFERENCES locations(id),
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        event_date TIMESTAMP NOT NULL
+      );
+    `);
 
-// Create locations table
-await pool.query(`
-  CREATE TABLE locations (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    city VARCHAR(100),
-    image_url VARCHAR(500)
-  )
-`);
+    await pool.query("DELETE FROM events");
+    await pool.query("DELETE FROM locations");
 
-// Create events table
-await pool.query(`
-  CREATE TABLE events (
-    id SERIAL PRIMARY KEY,
-    location_id INTEGER REFERENCES locations(id),
-    title VARCHAR(200),
-    date_time TIMESTAMP,
-    description TEXT
-  )
-`);
+    const locations = await pool.query(`
+      INSERT INTO locations (name, slug) VALUES
+      ('🎮 Arcade Haven - NYC', 'nyc'),
+      ('🎯 Pixel Palace - LA', 'la'), 
+      ('⚡ Retro Realm - Chicago', 'chicago'),
+      ('🎰 Game Grid - Miami', 'miami')
+      RETURNING id, name, slug
+    `);
 
-// Insert sample locations
-await pool.query(`
-  INSERT INTO locations (name, city, image_url) VALUES
-  ('Chicago Neon', 'Chicago, IL', 'https://images.unsplash.com/photo-xxx'),
-  ('NYC Pixel Palace', 'New York, NY', 'https://images.unsplash.com/photo-yyy'),
-  ('LA Retro Lounge', 'Los Angeles, CA', 'https://images.unsplash.com/photo-zzz'),
-  ('Austin 8Bit', 'Austin, TX', 'https://images.unsplash.com/photo-aaa')
-`);
+    await pool.query(`
+      INSERT INTO events (location_id, title, description, event_date) VALUES
+      (${locations.rows[0].id}, 'Pac-Man Tournament', 'Classic showdown at NYC!', '2026-03-25 19:00:00'),
+      (${locations.rows[0].id}, '🔥 RETRO GAME NIGHT', 'Donkey Kong classics! (PAST EVENT)', '2026-03-01 19:00:00'),
+      (${locations.rows[1].id}, 'Street Fighter Pro Night', 'Pro players battle!', '2026-03-20 20:00:00'),
+      (${locations.rows[2].id}, 'Pinball Competition', 'High score showdown!', '2026-03-22 18:00:00'),
+      (${locations.rows[3].id}, 'DDR Dance Battle', 'Dance Dance Revolution!', '2026-03-28 21:00:00')
+    `);
 
-// Insert sample events
-await pool.query(`
-  INSERT INTO events (location_id, title, date_time, description) VALUES
-  (1, 'Pac-Man Tournament', '2026-03-20 19:00', 'High score showdown!'),
-  (1, 'Pinball Night', '2026-03-25 21:00', 'Free play + prizes'),
-  (2, 'Street Fighter Pro', '2026-03-18 20:00', 'Watch the champs'),
-  (3, 'Galaga Marathon', '2026-03-22 18:00', '24hr endurance')
-`);
+    console.log("✅ RESET COMPLETE! Past event added to NYC!");
+    console.log("NYC now has: Pac-Man (future) + Retro Game Night (PAST)");
+  } catch (error) {
+    console.error("❌ Error:", error.message);
+  } finally {
+    pool.end();
+  }
+};
 
-console.log("✅ Arcade Bar database ready!");
+resetDB();

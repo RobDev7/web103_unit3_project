@@ -50,7 +50,7 @@ GIF created with ... LICEcap
 
 ## Notes
 
-Not getting the overall work for its data and server.
+Got its data and server working.
 
 ## License
 
